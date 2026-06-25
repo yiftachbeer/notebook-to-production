@@ -1,8 +1,9 @@
 import csv
 
 import hydra
+import wandb
 from hydra.utils import instantiate
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
 from data import StereoDataset
 from seg import HfSegmentationModel
@@ -36,6 +37,12 @@ def main(cfg: DictConfig):
     summary = {k: sum(r[k] for r in rows) / len(rows) for k in cols if k != "id"}
     print("mean:", {k: round(v, 3) for k, v in summary.items()})
     print(f"wrote {METRICS_CSV} ({len(rows)} frames)")
+
+    # log the config, per-frame table and summary so runs are comparable later
+    run = wandb.init(project="depthsegto3d", config=OmegaConf.to_container(cfg, resolve=True))
+    table = wandb.Table(columns=cols, data=[list(r.values()) for r in rows])
+    run.log({"frames": table, **summary})
+    run.finish()
 
 
 if __name__ == "__main__":
