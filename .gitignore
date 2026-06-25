@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+stereo_data/
+stereo_data.zip
+__MACOSX/
+metrics.csv
