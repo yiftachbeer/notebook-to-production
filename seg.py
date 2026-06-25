@@ -1,12 +1,8 @@
 import numpy as np
-import torch
-from PIL import Image
 from transformers import pipeline
 
 from data import Frame
-
-DEVICE = 0 if torch.cuda.is_available() else -1
-DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
+from device import DEVICE, DTYPE
 
 CITYSCAPES_COLORS = {
     "road": (128, 64, 128), "sidewalk": (244, 35, 232), "building": (70, 70, 70),
@@ -17,22 +13,6 @@ CITYSCAPES_COLORS = {
     "truck": (0, 0, 70), "bus": (0, 60, 100), "train": (0, 80, 100),
     "motorcycle": (0, 0, 230), "bicycle": (119, 11, 32),
 }
-
-
-class HfDepthModel:
-    """Monocular metric-depth model. predict(frame) -> (H, W) depth in meters."""
-
-    def __init__(self, model_id: str, revision: str | None = None):
-        self.pipe = pipeline("depth-estimation", model=model_id, revision=revision,
-                             device=DEVICE, torch_dtype=DTYPE)
-
-    def predict(self, frame: Frame) -> np.ndarray:
-        image = frame["image"]
-        W, H = image.size
-        depth = self.pipe(image)["predicted_depth"].squeeze().float().cpu().numpy()
-        if depth.shape != (H, W):
-            depth = np.array(Image.fromarray(depth).resize((W, H), Image.BILINEAR))
-        return depth
 
 
 class HfSegmentationModel:

@@ -1,6 +1,6 @@
 import numpy as np
 
-from models import CITYSCAPES_COLORS
+from seg import CITYSCAPES_COLORS
 
 
 def frame_metrics(frame_id: str, depth_m: np.ndarray, seg_color: np.ndarray) -> dict[str, str | float]:
