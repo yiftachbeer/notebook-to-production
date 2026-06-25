@@ -1,5 +1,6 @@
 transformers==4.46.3
 huggingface_hub==0.26.5
+hydra-core==1.3.2
 
 # numpy, pillow, matplotlib and plotly are required too, but not listed here
 # because Colab already ships them.

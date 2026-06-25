@@ -1,0 +1,11 @@
+defaults:
+  - depth_model: depth_anything_base
+  - _self_
+
+data_dir: stereo_data
+frame: "000009"
+n_points: 60000
+
+segmentation_model:
+  id: nvidia/segformer-b5-finetuned-cityscapes-1024-1024
+  revision: 2c6f153e4c23c229e2fa2b188eb250607e030cd8

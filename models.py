@@ -5,9 +5,6 @@ from transformers import pipeline
 
 from data import Frame
 
-DEPTH_MODEL = "depth-anything/Depth-Anything-V2-Metric-Outdoor-Base-hf"
-SEG_MODEL = "nvidia/segformer-b5-finetuned-cityscapes-1024-1024"
-
 DEVICE = 0 if torch.cuda.is_available() else -1
 DTYPE = torch.float16 if torch.cuda.is_available() else torch.float32
 
@@ -25,8 +22,9 @@ CITYSCAPES_COLORS = {
 class HfDepthModel:
     """Monocular metric-depth model. predict(frame) -> (H, W) depth in meters."""
 
-    def __init__(self, model_id: str = DEPTH_MODEL):
-        self.pipe = pipeline("depth-estimation", model=model_id, device=DEVICE, torch_dtype=DTYPE)
+    def __init__(self, model_id: str, revision: str | None = None):
+        self.pipe = pipeline("depth-estimation", model=model_id, revision=revision,
+                             device=DEVICE, torch_dtype=DTYPE)
 
     def predict(self, frame: Frame) -> np.ndarray:
         image = frame["image"]
@@ -40,8 +38,9 @@ class HfDepthModel:
 class HfSegmentationModel:
     """Semantic segmentation. predict(frame) -> (H, W, 3) Cityscapes color map."""
 
-    def __init__(self, model_id: str = SEG_MODEL):
-        self.pipe = pipeline("image-segmentation", model=model_id, device=DEVICE, torch_dtype=DTYPE)
+    def __init__(self, model_id: str, revision: str | None = None):
+        self.pipe = pipeline("image-segmentation", model=model_id, revision=revision,
+                             device=DEVICE, torch_dtype=DTYPE)
 
     def predict(self, frame: Frame) -> np.ndarray:
         image = frame["image"]

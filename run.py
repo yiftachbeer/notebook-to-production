@@ -1,17 +1,20 @@
 import csv
 
+import hydra
+from omegaconf import DictConfig
+
 from data import StereoDataset
 from models import HfDepthModel, HfSegmentationModel
 from metrics import frame_metrics
 
-DATA_DIR = "stereo_data"
 METRICS_CSV = "metrics.csv"
 
 
-def main():
-    frames = StereoDataset(DATA_DIR)
-    depth_model = HfDepthModel()
-    segmentation_model = HfSegmentationModel()
+@hydra.main(version_base=None, config_path="conf", config_name="config")
+def main(cfg: DictConfig):
+    frames = StereoDataset(cfg.data_dir)
+    depth_model = HfDepthModel(cfg.depth_model.id, cfg.depth_model.revision)
+    segmentation_model = HfSegmentationModel(cfg.segmentation_model.id, cfg.segmentation_model.revision)
 
     rows = []
     for frame_id in frames.ids:
